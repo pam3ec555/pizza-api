@@ -53,4 +53,24 @@ utils.jsonParse = (str) => {
   }
 };
 
+/**
+ * @param {number} strLength
+ * @return {string|null}
+ */
+utils.generateRandomString = (strLength) => {
+  if (typeof strLength === 'number' && strLength > 0){
+    const possibleCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+    let str = '';
+    for (let i = 1; i <= strLength; i++) {
+      const randomCharacter = possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+      str += randomCharacter;
+    }
+
+    return str;
+  }
+
+  return null;
+};
+
 module.exports = utils;

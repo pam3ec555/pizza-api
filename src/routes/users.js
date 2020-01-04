@@ -1,6 +1,7 @@
 const fieldValidation = require('../utils/fieldValidation');
 const store = require('../store');
 const { objectSize, hash } = require('../utils');
+const { USERS_DIR } = require('../utils/constants');
 
 const routes = {};
 
@@ -10,11 +11,9 @@ const routes = {};
 const acceptableMethods = new Set(['post', 'get', 'put', 'delete']);
 
 /**
- * @constant
- * @type {string}
+ * @param {Object} data
+ * @param {function} callback
  */
-const DIR = `users`;
-
 routes.users = (data, callback) => {
   if(acceptableMethods.has(data.method)) {
     routes._users[data.method](data, callback);
@@ -25,6 +24,10 @@ routes.users = (data, callback) => {
 
 routes._users = {};
 
+/**
+ * @param {Object} data
+ * @param {function} callback
+ */
 routes._users.post = (data, callback) => {
   if (typeof data === 'object' && typeof data.payload === 'object') {
     let { name, email, address, password } = data.payload;
@@ -37,14 +40,14 @@ routes._users.post = (data, callback) => {
 
     if (objectSize(errors) === 0) {
       store.read({
-        dir: DIR,
+        dir: USERS_DIR,
         file: email,
-        callback: (err, data) => {
+        callback: (err) => {
           if (err) {
             const hashedPassword = hash(password);
             if (hashedPassword) {
               store.create({
-                dir: DIR,
+                dir: USERS_DIR,
                 file: email,
                 data: { name, email, hashedPassword, address },
                 callback: (err) => {
@@ -71,14 +74,18 @@ routes._users.post = (data, callback) => {
   }
 };
 
-// Todo: This route allowed only for authenticated users
+/**
+ * Todo: This route allowed only for authenticated users
+ * @param {Object} data
+ * @param {function} callback
+ */
 routes._users.get = (data, callback) => {
   if (typeof data === 'object' && typeof data.query === 'object') {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
       store.read({
-        dir: DIR,
+        dir: USERS_DIR,
         file: email,
         callback: (err, userData) => {
           if (!err && userData) {
@@ -97,7 +104,11 @@ routes._users.get = (data, callback) => {
   }
 };
 
-// Todo: This route allowed only for authenticated users
+/**
+ * Todo: This route allowed only for authenticated users
+ * @param {Object} data
+ * @param {function} callback
+ */
 routes._users.put = (data, callback) => {
   if (typeof data === 'object' && typeof data.payload === 'object' && typeof data.query === 'object') {
     const { email } = data.query;
@@ -106,7 +117,7 @@ routes._users.put = (data, callback) => {
       const { name, address } = data.payload;
       if (name || address) {
         store.read({
-          dir: DIR,
+          dir: USERS_DIR,
           file: email,
           callback: (err, userData) => {
             if (!err && userData) {
@@ -118,7 +129,7 @@ routes._users.put = (data, callback) => {
               }
 
               store.update({
-                dir: DIR,
+                dir: USERS_DIR,
                 file: email,
                 data: userData,
                 callback: (err) => {
@@ -145,19 +156,23 @@ routes._users.put = (data, callback) => {
   }
 };
 
-// Todo: This route allowed only for authenticated users
+/**
+ * Todo: This route allowed only for authenticated users
+ * @param {Object} data
+ * @param {function} callback
+ */
 routes._users.delete = (data, callback) => {
   if (typeof data === 'object' && typeof data.query === 'object') {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
       store.read({
-        dir: DIR,
+        dir: USERS_DIR,
         file: email,
         callback: (err, userData) => {
           if (!err && data) {
             store.delete({
-              dir: DIR,
+              dir: USERS_DIR,
               file: email,
               callback: (err) => {
                 if (!err) {
