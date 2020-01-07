@@ -2,6 +2,7 @@ const fieldValidation = require('../utils/fieldValidation');
 const store = require('../store');
 const { objectSize, hash } = require('../utils');
 const { USERS_DIR } = require('../utils/constants');
+const { verifyToken } = require('../auth');
 
 const routes = {};
 
@@ -75,7 +76,6 @@ routes._users.post = (data, callback) => {
 };
 
 /**
- * Todo: This route allowed only for authenticated users
  * @param {Object} data
  * @param {function} callback
  */
@@ -84,15 +84,25 @@ routes._users.get = (data, callback) => {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
-      store.read({
-        dir: USERS_DIR,
-        file: email,
-        callback: (err, userData) => {
-          if (!err && userData) {
-            delete userData.hashedPassword;
-            callback(200, userData);
+      verifyToken({
+        email,
+        token: data.headers.token,
+        callback: (err) => {
+          if (!err) {
+            store.read({
+              dir: USERS_DIR,
+              file: email,
+              callback: (err, userData) => {
+                if (!err && userData) {
+                  delete userData.hashedPassword;
+                  callback(200, userData);
+                } else {
+                  callback(404);
+                }
+              },
+            });
           } else {
-            callback(404);
+            callback(401, { error: err });
           }
         },
       });
@@ -105,7 +115,6 @@ routes._users.get = (data, callback) => {
 };
 
 /**
- * Todo: This route allowed only for authenticated users
  * @param {Object} data
  * @param {function} callback
  */
@@ -116,35 +125,45 @@ routes._users.put = (data, callback) => {
     if (!emailError) {
       const { name, address } = data.payload;
       if (name || address) {
-        store.read({
-          dir: USERS_DIR,
-          file: email,
-          callback: (err, userData) => {
-            if (!err && userData) {
-              if (name) {
-                userData.name = name;
-              }
-              if (address) {
-                userData.address = address;
-              }
-
-              store.update({
+        verifyToken({
+          token: data.headers.token,
+          email,
+          callback: (err) => {
+            if (!err) {
+              store.read({
                 dir: USERS_DIR,
                 file: email,
-                data: userData,
-                callback: (err) => {
-                  if (!err) {
-                    callback(204);
+                callback: (err, userData) => {
+                  if (!err && userData) {
+                    if (name) {
+                      userData.name = name;
+                    }
+                    if (address) {
+                      userData.address = address;
+                    }
+
+                    store.update({
+                      dir: USERS_DIR,
+                      file: email,
+                      data: userData,
+                      callback: (err) => {
+                        if (!err) {
+                          callback(204);
+                        } else {
+                          callback(500, 'Could not update the user');
+                        }
+                      },
+                    });
                   } else {
-                    callback(500, 'Could not update the user');
+                    callback(404);
                   }
                 },
-              });
+              })
             } else {
-              callback(404);
+              callback(401, { error: err });
             }
-          },
-        })
+          }
+        });
       } else {
         callback(400, { error: 'There are no fields to update' });
       }
@@ -157,7 +176,6 @@ routes._users.put = (data, callback) => {
 };
 
 /**
- * Todo: This route allowed only for authenticated users
  * @param {Object} data
  * @param {function} callback
  */
@@ -166,27 +184,37 @@ routes._users.delete = (data, callback) => {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
-      store.read({
-        dir: USERS_DIR,
-        file: email,
-        callback: (err, userData) => {
-          if (!err && data) {
-            store.delete({
+      verifyToken({
+        token: data.headers.token,
+        email,
+        callback: (err) => {
+          if (!err) {
+            store.read({
               dir: USERS_DIR,
               file: email,
-              callback: (err) => {
-                if (!err) {
-                  callback(204);
+              callback: (err, userData) => {
+                if (!err && data) {
+                  store.delete({
+                    dir: USERS_DIR,
+                    file: email,
+                    callback: (err) => {
+                      if (!err) {
+                        callback(204);
+                      } else {
+                        callback(500, { error: 'Could not delete the user' });
+                      }
+                    },
+                  });
                 } else {
-                  callback(500, { error: 'Could not delete the user' });
+                  callback(404);
                 }
               },
             });
           } else {
-            callback(404);
+            callback(401, { error: err });
           }
-        },
-      });
+        }
+      })
     } else {
       callback(400, { error: { email: emailError } });
     }
