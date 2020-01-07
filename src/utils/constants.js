@@ -10,4 +10,9 @@ constants.USERS_DIR = 'users';
  */
 constants.TOKENS_DIR = 'tokens';
 
+/**
+ * @type {string}
+ */
+constants.MENU_DIR = 'menu';
+
 module.exports = constants;

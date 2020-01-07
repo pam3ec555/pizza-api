@@ -41,7 +41,7 @@ server.init = () => {
 
       const routeHandler = routes[trimmedPath] || routes.notFound;
 
-      const { headers, method } = req;
+      const { headers = {}, method } = req;
 
       routeHandler(
         {

@@ -28,7 +28,7 @@ const login = (data, callback) => {
                   file: token,
                   data: {
                     id: token,
-                    expires: new Date() + 1000 * 60 * 60,
+                    expires: new Date().getTime() + 1000 * 60 * 60,
                     email,
                   },
                   callback: (err) => {

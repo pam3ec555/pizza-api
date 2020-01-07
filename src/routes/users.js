@@ -2,21 +2,21 @@ const fieldValidation = require('../utils/fieldValidation');
 const store = require('../store');
 const { objectSize, hash } = require('../utils');
 const { USERS_DIR } = require('../utils/constants');
-const { verifyToken } = require('../auth');
-
-const routes = {};
+const { verifyUser } = require('../auth');
 
 /**
  * @type {Set<string>}
  */
 const acceptableMethods = new Set(['post', 'get', 'put', 'delete']);
 
+const routes = {};
+
 /**
  * @param {Object} data
  * @param {function} callback
  */
 routes.users = (data, callback) => {
-  if(acceptableMethods.has(data.method)) {
+  if (acceptableMethods.has(data.method)) {
     routes._users[data.method](data, callback);
   } else {
     callback(405);
@@ -84,7 +84,7 @@ routes._users.get = (data, callback) => {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
-      verifyToken({
+      verifyUser({
         email,
         token: data.headers.token,
         callback: (err) => {
@@ -125,7 +125,7 @@ routes._users.put = (data, callback) => {
     if (!emailError) {
       const { name, address } = data.payload;
       if (name || address) {
-        verifyToken({
+        verifyUser({
           token: data.headers.token,
           email,
           callback: (err) => {
@@ -184,7 +184,7 @@ routes._users.delete = (data, callback) => {
     const { email } = data.query;
     const emailError = fieldValidation(email, { requiredField: true, email: true });
     if (!emailError) {
-      verifyToken({
+      verifyUser({
         token: data.headers.token,
         email,
         callback: (err) => {

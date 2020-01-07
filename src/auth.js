@@ -5,10 +5,39 @@ const auth = {};
 
 /**
  * @param {string} token
+ * @param {function(string|Error|boolean)} callback
+ */
+auth.userIsLoggedIn = ({
+  token,
+  callback,
+}) => {
+  if (typeof token === 'string') {
+    store.read({
+      dir: TOKENS_DIR,
+      file: token,
+      callback: (err, data) => {
+        if (!err && typeof data === 'object') {
+          if (data.expires < new Date().getTime()) {
+            callback('Token is expired!');
+          } else {
+            callback(false);
+          }
+        } else {
+          callback('Token is invalid or it had expired and removed.');
+        }
+      }
+    });
+  } else {
+    callback('User is not authenticated');
+  }
+};
+
+/**
+ * @param {string} token
  * @param {string} email
  * @param {function(string|Error|boolean)} callback
  */
-auth.verifyToken = ({
+auth.verifyUser = ({
   token,
   email,
   callback,
@@ -21,13 +50,13 @@ auth.verifyToken = ({
         if (!err && typeof data === 'object') {
           if (data.email !== email) {
             callback('Access denied!');
-          } else if (data.expires > new Date()) {
+          } else if (data.expires < new Date().getTime()) {
             callback('Token is expired!');
           } else {
             callback(false);
           }
         } else {
-          callback('Invalid token!');
+          callback('Token is invalid or it had expired and removed.');
         }
       }
     });
