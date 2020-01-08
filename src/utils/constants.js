@@ -15,4 +15,14 @@ constants.TOKENS_DIR = 'tokens';
  */
 constants.MENU_DIR = 'menu';
 
+/**
+ * @type {string}
+ */
+constants.CARTS_DIR = 'carts';
+
+/**
+ * @type {string}
+ */
+constants.PIZZA_LIST_FILE = 'pizzaList';
+
 module.exports = constants;

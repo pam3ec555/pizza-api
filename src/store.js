@@ -17,6 +17,12 @@ store._baseDir = path.join(appDir, '/.data/');
 store._getFilePath = (dir, file) => `${store._baseDir}${dir}/${file}.json`;
 
 /**
+ * @param {string} path
+ * @return {string}
+ */
+store._getDirPath = (path) => `${store._baseDir}${path}`;
+
+/**
  * @param {string} dir
  * @param {string} file
  * @param {Object} data
@@ -52,7 +58,7 @@ store.create = ({
 /**
  * @param {string} dir
  * @param {string} file
- * @param {function(err: string|null|boolean, data?: Object)} callback
+ * @param {function(err: string|null|boolean, data?: Object | Array)} callback
  */
 store.read = ({
   dir,
@@ -119,6 +125,34 @@ store.delete = ({
 }) => {
   fs.unlink(store._getFilePath(dir, file), (err) => {
     callback(err);
+  });
+};
+
+/**
+ * @param {string} path
+ * @param {boolean} recursive
+ * @param {function(err: null|Error)} callback
+ */
+store.createDir = ({
+  path,
+  recursive = true,
+  callback,
+}) => {
+  fs.mkdir(store._getDirPath(path), { recursive }, (err) => {
+    callback(err);
+  });
+};
+
+/**
+ * @param {string} path
+ * @param {function(err: null|Error, list: string[]?)} callback
+ */
+store.readDir = ({
+  path,
+  callback,
+}) => {
+  fs.readdir(store._getDirPath(path), (err, list) => {
+    callback(err, list);
   });
 };
 

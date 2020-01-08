@@ -1,13 +1,18 @@
 const fieldValidation = require('../utils/fieldValidation');
 const store = require('../store');
 const { objectSize, hash } = require('../utils');
-const { USERS_DIR } = require('../utils/constants');
+const { USERS_DIR, CARTS_DIR } = require('../utils/constants');
 const { verifyUser } = require('../auth');
 
 /**
  * @type {Set<string>}
  */
 const acceptableMethods = new Set(['post', 'get', 'put', 'delete']);
+
+/**
+ * @type {Set<string>}
+ */
+const deleteDirs = new Set([CARTS_DIR]);
 
 const routes = {};
 
@@ -31,7 +36,7 @@ routes._users = {};
  */
 routes._users.post = (data, callback) => {
   if (typeof data === 'object' && typeof data.payload === 'object') {
-    let { name, email, address, password } = data.payload;
+    const { name, email, address, password } = data.payload;
     const errors = {
       name: fieldValidation(name, { requiredField: true }),
       email: fieldValidation(email, { requiredField: true, email: true }),
@@ -199,6 +204,13 @@ routes._users.delete = (data, callback) => {
                     file: email,
                     callback: (err) => {
                       if (!err) {
+                        deleteDirs.forEach((dir) => {
+                          store.delete({
+                            dir,
+                            file: email,
+                            callback: () => {},
+                          });
+                        });
                         callback(204);
                       } else {
                         callback(500, { error: 'Could not delete the user' });

@@ -1,6 +1,6 @@
 const { userIsLoggedIn } = require('../auth');
 const store = require('../store');
-const { MENU_DIR } = require('../utils/constants');
+const { MENU_DIR, PIZZA_LIST_FILE } = require('../utils/constants');
 
 /**
  * @type {Set<string>}
@@ -35,7 +35,7 @@ routes._menu.get = (data, callback) => {
         if (!err) {
           store.read({
             dir: MENU_DIR,
-            file: 'pizzaList',
+            file: PIZZA_LIST_FILE,
             callback: (err, pizzaList) => {
               if (!err && pizzaList) {
                 callback(200, pizzaList);
