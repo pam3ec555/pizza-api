@@ -9,6 +9,8 @@ const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@
  * @param {number?} minLength
  * @param {number?} [maxLength=255]
  * @param {boolean?} [naturalNumber=true]
+ * @param {number?} minValue
+ * @param {number?} maxValue
  * @return {string | undefined}
  */
 const fieldValidation = (field, {
@@ -18,6 +20,8 @@ const fieldValidation = (field, {
   minLength,
   maxLength = 255,
   naturalNumber = true,
+  minValue,
+  maxValue,
 }) => {
   switch (type) {
     case 'string':
@@ -55,6 +59,14 @@ const fieldValidation = (field, {
 
       if (naturalNumber && field < 1) {
         return 'Field must be natural number.';
+      }
+
+      if (typeof minValue === 'number' && field < minValue) {
+        return `Field value must be more than ${minValue} or equal it.`;
+      }
+
+      if (typeof maxValue === 'number' && field > maxValue) {
+        return `Field value must be less than ${maxValue} or equal it.`;
       }
 
       return undefined;

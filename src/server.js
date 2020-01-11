@@ -34,7 +34,7 @@ server.init = () => {
     });
 
     req.on('end', () => {
-      buffer += decoder.end(); // Todo: check without it
+      buffer += decoder.end();
 
       const parsedUrl = url.parse(req.url, true);
       const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
