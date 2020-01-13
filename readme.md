@@ -338,3 +338,7 @@
     message: string
 }
 ```
+
+## Extra info
+
+Do not delete **pizza data** in /.data/menu/pizzaList.json
