@@ -4,6 +4,8 @@ const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../utils/constants');
 const { userDataByToken } = require('../auth');
 const store = require('../store');
 const stripe = require('../api/stripe');
+const mailgun = require('../api/mailgun');
+const logger = require('../utils/logger');
 
 /**
  * @type {Set<string>}
@@ -88,8 +90,28 @@ routes._orders.post = (data, callback) => {
                         callback: (err, paymentData) => {
                           if (!err && paymentData) {
                             const { amount, description } = paymentData;
-                            callback(200, {
-                              message: `The payment is successfully done for $${amount}. Order data: ${description}`,
+                            const message =
+                              `The payment is successfully done for $${amount}. Order data: ${description}`;
+                            mailgun.request({
+                              subject: 'Successful payment',
+                              text: message,
+                              email: userData.email,
+                              callback: (err) => {
+                                if (err) {
+                                  logger.error(err);
+                                }
+                                store.update({
+                                  dir: CARTS_DIR,
+                                  file: userData.email,
+                                  data: [],
+                                  callback: (err) => {
+                                    if (err) {
+                                      logger.error(err);
+                                    }
+                                    callback(200, { message });
+                                  }
+                                });
+                              },
                             });
                           } else {
                             callback(500, { error: err });

@@ -11,6 +11,7 @@ const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@
  * @param {boolean?} [naturalNumber=true]
  * @param {number?} minValue
  * @param {number?} maxValue
+ * @param {boolean?} [emptyIsValid=true]
  * @return {string | undefined}
  */
 const fieldValidation = (field, {
@@ -22,6 +23,7 @@ const fieldValidation = (field, {
   naturalNumber = true,
   minValue,
   maxValue,
+  emptyIsValid = true,
 }) => {
   switch (type) {
     case 'string':
@@ -67,6 +69,20 @@ const fieldValidation = (field, {
 
       if (typeof maxValue === 'number' && field > maxValue) {
         return `Field value must be less than ${maxValue} or equal it.`;
+      }
+
+      return undefined;
+    case 'array':
+      if (requiredField && typeof field === 'undefined') {
+        return 'Field is required';
+      }
+
+      if (!Array.isArray(field)) {
+        return 'Invalid type';
+      }
+
+      if (!emptyIsValid && field.length === 0) {
+        return 'Array is empty';
       }
 
       return undefined;
