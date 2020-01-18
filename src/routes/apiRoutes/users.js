@@ -1,8 +1,8 @@
-const fieldValidation = require('../utils/fieldValidation');
-const store = require('../store');
-const { objectSize, hash } = require('../utils');
-const { USERS_DIR, CARTS_DIR } = require('../utils/constants');
-const { verifyUser } = require('../auth');
+const fieldValidation = require('../../utils/fieldValidation');
+const store = require('../../store');
+const { objectSize, hash } = require('../../utils');
+const { USERS_DIR, CARTS_DIR } = require('../../utils/constants');
+const { verifyUser } = require('../../auth');
 
 /**
  * @type {Set<string>}
@@ -24,7 +24,7 @@ routes.users = (data, callback) => {
   if (acceptableMethods.has(data.method)) {
     routes._users[data.method](data, callback);
   } else {
-    callback(405);
+    callback({ statusCode: 405 });
   }
 };
 
@@ -58,25 +58,40 @@ routes._users.post = (data, callback) => {
                 data: { name, email, hashedPassword, address },
                 callback: (err) => {
                   if (!err) {
-                    callback(204);
+                    callback({ statusCode: 204 });
                   } else {
-                    callback(500, { error: `Could create the user. ${err}` });
+                    callback({
+                      statusCode: 500,
+                      data: { error: `Could create the user. ${err}` },
+                    });
                   }
                 },
               });
             } else {
-              callback(500, { error: `Could not hash the password. ${err}` });
+              callback({
+                statusCode: 500,
+                data: { error: `Could not hash the password. ${err}` },
+              });
             }
           } else {
-            callback(409, { error: `User with email ${email} already exists` })
+            callback({
+              statusCode: 409,
+              data: { error: `User with email ${email} already exists` },
+            });
           }
         },
       });
     } else {
-      callback(400, { error: errors });
+      callback({
+        statusCode: 400,
+        data: { error: errors },
+      });
     }
   } else {
-    callback(400, { error: 'Payload must be an object' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Payload must be an object' },
+    });
   }
 };
 
@@ -100,22 +115,34 @@ routes._users.get = (data, callback) => {
               callback: (err, userData) => {
                 if (!err && userData) {
                   delete userData.hashedPassword;
-                  callback(200, userData);
+                  callback({
+                    statusCode: 200,
+                    data: userData,
+                  });
                 } else {
-                  callback(404);
+                  callback({ statusCode: 404 });
                 }
               },
             });
           } else {
-            callback(401, { error: err });
+            callback({
+              statusCode: 401,
+              data: { error: err },
+            });
           }
         },
       });
     } else {
-      callback(400, { error: { email: emailError } });
+      callback({
+        statusCode: 400,
+        data: { error: { email: emailError } },
+      });
     }
   } else {
-    callback(400, { error: 'Query params are empty' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Query params are empty' },
+    });
   }
 };
 
@@ -153,30 +180,45 @@ routes._users.put = (data, callback) => {
                       data: userData,
                       callback: (err) => {
                         if (!err) {
-                          callback(204);
+                          callback({ statusCode: 204 });
                         } else {
-                          callback(500, 'Could not update the user');
+                          callback({
+                            statusCode: 500,
+                            data: { error: 'Could not update the user' },
+                          });
                         }
                       },
                     });
                   } else {
-                    callback(404);
+                    callback({ statusCode: 404 });
                   }
                 },
               })
             } else {
-              callback(401, { error: err });
+              callback({
+                statusCode: 401,
+                data: { error: err },
+              });
             }
           }
         });
       } else {
-        callback(400, { error: 'There are no fields to update' });
+        callback({
+          statusCode: 400,
+          data: { error: 'There are no fields to update' },
+        });
       }
     } else {
-      callback(400, { error: { email: emailError } });
+      callback({
+        statusCode: 400,
+        data: { error: { email: emailError } },
+      });
     }
   } else {
-    callback(400, { error: 'Query params are empty or payload is not defined' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Query params are empty or payload is not defined' },
+    });
   }
 };
 
@@ -197,7 +239,7 @@ routes._users.delete = (data, callback) => {
             store.read({
               dir: USERS_DIR,
               file: email,
-              callback: (err, userData) => {
+              callback: (err) => {
                 if (!err && data) {
                   store.delete({
                     dir: USERS_DIR,
@@ -211,27 +253,39 @@ routes._users.delete = (data, callback) => {
                             callback: () => {},
                           });
                         });
-                        callback(204);
+                        callback({ statusCode: 204 });
                       } else {
-                        callback(500, { error: 'Could not delete the user' });
+                        callback({
+                          statusCode: 500,
+                          data: { error: 'Could not delete the user' },
+                        });
                       }
                     },
                   });
                 } else {
-                  callback(404);
+                  callback({ statusCode: 404 });
                 }
               },
             });
           } else {
-            callback(401, { error: err });
+            callback({
+              statusCode: 401,
+              data: { error: err },
+            });
           }
         }
       })
     } else {
-      callback(400, { error: { email: emailError } });
+      callback({
+        statusCode: 400,
+        data: { error: { email: emailError } },
+      });
     }
   } else {
-    callback(400, { error: 'Query params are empty' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Query params are empty' },
+    });
   }
 };
 

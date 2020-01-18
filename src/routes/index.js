@@ -1,22 +1,9 @@
-const users = require('./users');
-const menu = require('./menu');
-const cart = require('./cart');
-const orders = require('./orders');
-const login = require('./auth/login');
-const logout = require('./auth/logout');
+const apiRoutes = require('./apiRoutes');
+const pageRoutes = require('./pageRoutes');
 
-const index = {
-  ...users,
-  ...menu,
-  ...cart,
-  ...orders,
-
-  login,
-  logout,
-
-  notFound: (data, callback) => {
-    callback(404);
-  },
+const routes = {
+  ...apiRoutes,
+  ...pageRoutes,
 };
 
-module.exports = index;
+module.exports = routes;

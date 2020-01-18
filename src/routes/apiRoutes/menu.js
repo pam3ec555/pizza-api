@@ -1,6 +1,6 @@
-const { userIsLoggedIn } = require('../auth');
-const store = require('../store');
-const { MENU_DIR, PIZZA_LIST_FILE } = require('../utils/constants');
+const { userIsLoggedIn } = require('../../auth');
+const store = require('../../store');
+const { MENU_DIR, PIZZA_LIST_FILE } = require('../../utils/constants');
 
 /**
  * @type {Set<string>}
@@ -17,7 +17,7 @@ routes.menu = (data, callback) => {
   if (acceptableMethods.has(data.method)) {
     routes._menu[data.method](data, callback);
   } else {
-    callback(405);
+    callback({ statusCode: 405 });
   }
 };
 
@@ -38,19 +38,31 @@ routes._menu.get = (data, callback) => {
             file: PIZZA_LIST_FILE,
             callback: (err, pizzaList) => {
               if (!err && pizzaList) {
-                callback(200, pizzaList);
+                callback({
+                  statusCode: 200,
+                  data: pizzaList,
+                });
               } else {
-                callback(500, { error: err });
+                callback({
+                  statusCode: 500,
+                  data: { error: err },
+                });
               }
             },
           });
         } else {
-          callback(401, { error: err });
+          callback({
+            statusCode: 401,
+            data: { error: err },
+          });
         }
       },
     });
   } else {
-    callback(500, { error: '"data" must be an object.' });
+    callback({
+      statusCode: 500,
+      data: { error: '"data" must be an object.' },
+    });
   }
 };
 

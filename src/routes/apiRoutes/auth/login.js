@@ -1,7 +1,7 @@
-const fieldValidation = require('../../utils/fieldValidation');
-const { objectSize, hash, generateRandomString } = require('../../utils');
-const store = require('../../store');
-const { USERS_DIR, TOKENS_DIR } = require('../../utils/constants');
+const fieldValidation = require('../../../utils/fieldValidation');
+const { objectSize, hash, generateRandomString } = require('../../../utils');
+const store = require('../../../store');
+const { USERS_DIR, TOKENS_DIR } = require('../../../utils/constants');
 
 /**
  * @param {Object} data
@@ -33,28 +33,49 @@ const login = (data, callback) => {
                   },
                   callback: (err) => {
                     if (!err) {
-                      callback(200, { token });
+                      callback({
+                        statusCode: 200,
+                        data: { token },
+                      });
                     } else {
-                      callback(500, { error: `Could not create token. ${err}` });
+                      callback({
+                        statusCode: 500,
+                        data: { error: `Could not create token. ${err}` },
+                      });
                     }
                   },
                 })
               } else {
-                callback(400, { error: 'Incorrect password' });
+                callback({
+                  statusCode: 400,
+                  data: { error: 'Incorrect password' },
+                });
               }
             } else {
-              callback(404, { error: 'User with specified email is not found.' });
+              callback({
+                statusCode: 404,
+                data: { error: 'User with specified email is not found.' },
+              });
             }
           }
         });
       } else {
-        callback(400, { error: errors });
+        callback({
+          statusCode: 400,
+          data: { error: errors },
+        });
       }
     } else {
-      callback(400, { error: 'Payload must be an object' });
+      callback({
+        statusCode: 400,
+        data: { error: 'Payload must be an object' },
+      });
     }
   } else {
-    callback(404, { error: 'method must be POST' });
+    callback({
+      statusCode: 404,
+      data: { error: 'method must be POST' },
+    });
   }
 };
 

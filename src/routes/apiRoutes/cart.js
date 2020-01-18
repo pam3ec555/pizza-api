@@ -1,8 +1,8 @@
-const fieldValidation = require('../utils/fieldValidation');
-const { objectSize } = require('../utils');
-const store = require('../store');
-const { userDataByToken } = require('../auth');
-const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../utils/constants');
+const fieldValidation = require('../../utils/fieldValidation');
+const { objectSize } = require('../../utils');
+const store = require('../../store');
+const { userDataByToken } = require('../../auth');
+const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../../utils/constants');
 
 /**
  * @type {Set<string>}
@@ -19,7 +19,7 @@ routes.cart = (data, callback) => {
   if (acceptableMethods.has(data.method)) {
     routes._cart[data.method](data, callback);
   } else {
-    callback(405);
+    callback({ statusCode: 405 });
   }
 };
 
@@ -59,22 +59,34 @@ routes._cart.post = (data, callback) => {
                             data: [...cartData, { itemId, count }],
                             callback: (err) => {
                               if (!err) {
-                                callback(204);
+                                callback({ statusCode: 204 });
                               } else {
-                                callback(500, { error: err });
+                                callback({
+                                  statusCode: 500,
+                                  data: { error: err },
+                                });
                               }
                             },
                           });
                         } else {
-                          callback(400, { error: 'Pizza that you want to add to the cart does not exist!' });
+                          callback({
+                            statusCode: 400,
+                            data: { error: 'Pizza that you want to add to the cart does not exist!' },
+                          });
                         }
                       } else {
-                        callback(500, { error: err });
+                        callback({
+                          statusCode: 500,
+                          data: { error: err },
+                        });
                       }
                     },
                   });
                 } else {
-                  callback(400, { error: 'This item is already in the cart.' });
+                  callback({
+                    statusCode: 400,
+                    data: { error: 'This item is already in the cart.' },
+                  });
                 }
               } else {
                 store.create({
@@ -83,9 +95,12 @@ routes._cart.post = (data, callback) => {
                   data: [{ itemId, count }],
                   callback: (err) => {
                     if (!err) {
-                      callback(204);
+                      callback({ statusCode: 204 });
                     } else {
-                      callback(500, { error: err });
+                      callback({
+                        statusCode: 500,
+                        data: { error: err },
+                      });
                     }
                   },
                 });
@@ -93,14 +108,23 @@ routes._cart.post = (data, callback) => {
             },
           });
         } else {
-          callback(401, { error: err });
+          callback({
+            statusCode: 401,
+            data: { error: err },
+          });
         }
       });
     } else {
-      callback(400, { error: errors });
+      callback({
+        statusCode: 400,
+        data: { error: errors },
+      });
     }
   } else {
-    callback(400, { error: 'Payload must be an object' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Payload must be an object' },
+    });
   }
 };
 
@@ -116,16 +140,28 @@ routes._cart.get = (data, callback) => {
         file: userData.email,
         callback: (err, cartData) => {
           if (!err) {
-            callback(200, cartData);
+            callback({
+              statusCode: 200,
+              data: cartData,
+            });
           } else if (err.code === 'ENOENT') {
-            callback(200, []);
+            callback({
+              statusCode: 200,
+              data: [],
+            });
           } else {
-            callback(500, { error: err });
+            callback({
+              statusCode: 500,
+              data: { error: err },
+            });
           }
         },
       });
     } else {
-      callback(401, { error: err });
+      callback({
+        statusCode: 401,
+        data: { error: err },
+      });
     }
   });
 };
@@ -162,34 +198,58 @@ routes._cart.put = (data, callback) => {
                       data: cartData.map((item) => item.itemId === itemId ? ({ ...item, count }) : item),
                       callback: (err) => {
                         if (!err) {
-                          callback(204);
+                          callback({ statusCode: 204 });
                         } else {
-                          callback(500, { error: err });
+                          callback({
+                            statusCode: 500,
+                            data: { error: err },
+                          });
                         }
                       },
                     })
                   } else {
-                    callback(400, { error: 'There is nothing to change.' });
+                    callback({
+                      statusCode: 400,
+                      data: { error: 'There is nothing to change.' },
+                    });
                   }
                 } else {
-                  callback(404, { error: 'Specified cart item is not defined.' });
+                  callback({
+                    statusCode: 404,
+                    data: { error: 'Specified cart item is not defined.' },
+                  });
                 }
               } else if (err.code === 'ENOENT') {
-                callback(400, { error: 'Cart is empty!' });
+                callback({
+                  statusCode: 400,
+                  data: { error: 'Cart is empty!' },
+                });
               } else {
-                callback(500, { error: err });
+                callback({
+                  statusCode: 500,
+                  data: { error: err },
+                });
               }
             },
           });
         } else {
-          callback(401, { error: err });
+          callback({
+            statusCode: 401,
+            data: { error: err },
+          });
         }
       });
     } else {
-      callback(400, { error: { count: countError } });
+      callback({
+        statusCode: 400,
+        data: { error: { count: countError } },
+      });
     }
   } else {
-    callback(400, { error: 'Payload must be an object and itemId should be in query params' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Payload must be an object and itemId should be in query params' },
+    });
   }
 };
 
@@ -216,28 +276,46 @@ routes._cart.delete = (data, callback) => {
                   data: cartData.filter((item) => item.itemId !== itemId),
                   callback: (err) => {
                     if (!err) {
-                      callback(204);
+                      callback({ statusCode: 204 });
                     } else {
-                      callback(500, { error: err });
+                      callback({
+                        statusCode: 500,
+                        data: { error: err },
+                      });
                     }
                   },
                 })
               } else {
-                callback(400, { error: 'Specified cart item is not defined. There is nothing to delete.' });
+                callback({
+                  statusCode: 400,
+                  data: { error: 'Specified cart item is not defined. There is nothing to delete.' },
+                });
               }
             } else if (err.code === 'ENOENT') {
-              callback(400, { error: 'Cart is empty! There is nothing to delete.' });
+              callback({
+                statusCode: 400,
+                data: { error: 'Cart is empty! There is nothing to delete.' },
+              });
             } else {
-              callback(500, { error: err });
+              callback({
+                statusCode: 500,
+                data: { error: err },
+              });
             }
           },
         });
       } else {
-        callback(401, { error: err });
+        callback({
+          statusCode: 401,
+          data: { error: err },
+        });
       }
     });
   } else {
-    callback(400, { error: 'itemId should be in query params' });
+    callback({
+      statusCode: 400,
+      data: { error: 'itemId should be in query params' },
+    });
   }
 };
 

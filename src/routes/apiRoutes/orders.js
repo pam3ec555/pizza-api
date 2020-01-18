@@ -1,11 +1,11 @@
-const fieldValidation = require('../utils/fieldValidation');
-const { objectSize } = require('../utils');
-const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../utils/constants');
-const { userDataByToken } = require('../auth');
-const store = require('../store');
-const stripe = require('../api/stripe');
-const mailgun = require('../api/mailgun');
-const logger = require('../utils/logger');
+const fieldValidation = require('../../utils/fieldValidation');
+const { objectSize } = require('../../utils');
+const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../../utils/constants');
+const { userDataByToken } = require('../../auth');
+const store = require('../../store');
+const stripe = require('../../api/stripe');
+const mailgun = require('../../api/mailgun');
+const logger = require('../../utils/logger');
 
 /**
  * @type {Set<string>}
@@ -22,7 +22,7 @@ routes.orders = (data, callback) => {
   if (acceptableMethods.has(data.method)) {
     routes._orders[data.method](data, callback);
   } else {
-    callback(405);
+    callback({ statusCode: 405 });
   }
 };
 
@@ -108,35 +108,56 @@ routes._orders.post = (data, callback) => {
                                     if (err) {
                                       logger.error(err);
                                     }
-                                    callback(200, { message });
+                                    callback({
+                                      statusCode: 200,
+                                      data: { message },
+                                    });
                                   }
                                 });
                               },
                             });
                           } else {
-                            callback(500, { error: err });
+                            callback({
+                              statusCode: 500,
+                              data: { error: err },
+                            });
                           }
                         },
                       });
                     } else {
-                      callback(500, { error: err });
+                      callback({
+                        statusCode: 500,
+                        data: { error: err },
+                      });
                     }
                   },
                 });
               } else {
-                callback(400, { error: 'Cart is empty.' });
+                callback({
+                  statusCode: 400,
+                  data: { error: 'Cart is empty.' },
+                });
               }
             },
           });
         } else {
-          callback(401, { error: err });
+          callback({
+            statusCode: 401,
+            data: { error: err },
+          });
         }
       });
     } else {
-      callback(400, { error: errors });
+      callback({
+        statusCode: 400,
+        data: { error: errors },
+      });
     }
   } else {
-    callback(400, { error: 'Payload must be object' });
+    callback({
+      statusCode: 400,
+      data: { error: 'Payload must be object' },
+    });
   }
 };
 

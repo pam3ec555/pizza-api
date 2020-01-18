@@ -4,24 +4,51 @@ const { StringDecoder } = require('string_decoder');
 const config = require('../config');
 const routes = require('./routes');
 const { jsonParse } = require('./utils');
+const { ContentType } = require('./utils/enums');
 
 const server = {};
 
 /**
- * @param {ServerResponse} res
- * @return {function(statusCode: number, payload: Object)}
+ * @param {string} contentType
+ * @param {*} payload
+ * @return {*}
  */
-const routeCallback = (res) => (statusCode, payload) => {
+const getStringPayload = (contentType, payload) => {
+  switch (contentType) {
+    case 'json':
+      payload = typeof payload === 'object' ? payload : {};
+
+      return JSON.stringify(payload);
+    case 'html':
+      payload = typeof payload === 'string' ? payload : '';
+
+      return payload;
+    default:
+      payload = typeof payload !== 'undefined' ? payload : '';
+
+      return payload;
+  }
+};
+
+/**
+ * @param {ServerResponse} res
+ * @return {function({ statusCode: number, data: Object, contentType: string })}
+ */
+const routeCallback = (res) => ({
+  statusCode,
+  data,
+  contentType,
+}) => {
   if (typeof statusCode !== 'number') {
     statusCode = 200;
   }
-  if (typeof payload !== 'object') {
-    payload = {};
+  if (typeof contentType !== 'string') {
+    contentType = 'json';
   }
 
-  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Type', ContentType[contentType] || 'text/plain');
   res.writeHead(statusCode);
-  res.end(JSON.stringify(payload));
+  res.end(getStringPayload(contentType, data));
 };
 
 server.init = () => {
@@ -37,7 +64,7 @@ server.init = () => {
       buffer += decoder.end();
 
       const parsedUrl = url.parse(req.url, true);
-      const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
+      const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '') || 'index';
 
       const routeHandler = routes[trimmedPath] || routes.notFound;
 
