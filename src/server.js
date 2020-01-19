@@ -66,7 +66,15 @@ server.init = () => {
       const parsedUrl = url.parse(req.url, true);
       const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '') || 'index';
 
-      const routeHandler = routes[trimmedPath] || routes.notFound;
+      let routeHandler;
+      console.log('te = ', trimmedPath, trimmedPath.startsWith('public/'));
+      if (trimmedPath.startsWith('public/')) {
+        routeHandler = routes.public;
+      } else if (typeof routes[trimmedPath] !== 'undefined') {
+        routeHandler = routes[trimmedPath];
+      } else {
+        routeHandler = routes.notFound;
+      }
 
       const { headers = {}, method } = req;
 
@@ -76,6 +84,7 @@ server.init = () => {
           method: method.toLowerCase(),
           query: parsedUrl.query,
           payload: jsonParse(buffer),
+          trimmedPath,
         },
         routeCallback(res),
       );

@@ -5,19 +5,26 @@
 
     <title>{{head.title}}</title>
 
-    <link type="image/x-icon" rel="icon" href="/favicon.ico">
+    <link type="image/x-icon" rel="icon" href="/public/favicon.ico">
+    <link rel="stylesheet" href="/public/style.css">
 </head>
 <body>
-    <header>
-        <ul>
+    <header class="header">
+        <a href="/">
+            <img src="/public/img/logo.png" alt="">
+        </a>
+        <ul class="header__nav-list">
             {{navData}}
         </ul>
     </header>
-    <div>
+    <main class="content">
         {{children}}
-    </div>
-    <footer>
-        <img src="/img/logo.png" alt="">
+    </main>
+    <footer class="footer">
+        <a href="/">
+            <img src="/public/img/logo.png" alt="">
+        </a>
+        <span>©Pizza, all rights reserved</span>
     </footer>
 </body>
 </html>

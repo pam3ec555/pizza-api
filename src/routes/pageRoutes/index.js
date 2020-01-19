@@ -1,4 +1,5 @@
 const menu = require('./menu');
+const publicFolder = require('./public');
 
 const pageRoutes = {
   'sign-up': 'any',
@@ -7,6 +8,7 @@ const pageRoutes = {
   'index': menu,
   'cart': 'any',
   'order': 'any',
+  'public': publicFolder,
 };
 
 module.exports = pageRoutes;

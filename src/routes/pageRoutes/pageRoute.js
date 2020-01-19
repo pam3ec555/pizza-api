@@ -18,7 +18,7 @@ const containerFile = path.join(templateDirPath, '_container.html');
  * @param {string} title
  * @return {string}
  */
-const itemTemplate = ({ href, title }) => `<li>
+const itemTemplate = ({ href, title }) => `<li class="header__nav-item">
     <a href="${href}">${title}</a>
 </li>`;
 
