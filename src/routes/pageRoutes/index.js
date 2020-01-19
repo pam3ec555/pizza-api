@@ -4,10 +4,9 @@ const publicFolder = require('./public');
 const pageRoutes = {
   'sign-up': 'any',
   'sign-in': 'any',
-  'logout': 'any',
   'index': menu,
-  'cart': 'any',
-  'order': 'any',
+  'my-cart': 'any',
+  'payment': 'any',
   'public': publicFolder,
 };
 

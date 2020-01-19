@@ -29,30 +29,18 @@ routes._menu = {};
  */
 routes._menu.get = (data, callback) => {
   if (typeof data === 'object') {
-    userIsLoggedIn({
-      token: data.headers.token,
-      callback: (err) => {
-        if (!err) {
-          store.read({
-            dir: MENU_DIR,
-            file: PIZZA_LIST_FILE,
-            callback: (err, pizzaList) => {
-              if (!err && pizzaList) {
-                callback({
-                  statusCode: 200,
-                  data: pizzaList,
-                });
-              } else {
-                callback({
-                  statusCode: 500,
-                  data: { error: err },
-                });
-              }
-            },
+    store.read({
+      dir: MENU_DIR,
+      file: PIZZA_LIST_FILE,
+      callback: (err, pizzaList) => {
+        if (!err && pizzaList) {
+          callback({
+            statusCode: 200,
+            data: pizzaList,
           });
         } else {
           callback({
-            statusCode: 401,
+            statusCode: 500,
             data: { error: err },
           });
         }

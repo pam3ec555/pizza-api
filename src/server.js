@@ -67,7 +67,6 @@ server.init = () => {
       const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '') || 'index';
 
       let routeHandler;
-      console.log('te = ', trimmedPath, trimmedPath.startsWith('public/'));
       if (trimmedPath.startsWith('public/')) {
         routeHandler = routes.public;
       } else if (typeof routes[trimmedPath] !== 'undefined') {
@@ -75,6 +74,7 @@ server.init = () => {
       } else {
         routeHandler = routes.notFound;
       }
+      console.log(trimmedPath, routeHandler);
 
       const { headers = {}, method } = req;
 
