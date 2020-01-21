@@ -74,7 +74,6 @@ server.init = () => {
       } else {
         routeHandler = routes.notFound;
       }
-      console.log(trimmedPath, routeHandler);
 
       const { headers = {}, method } = req;
 

@@ -50,3 +50,38 @@ function openModal({
     acceptBtn.onclick = onSuccess;
   }
 }
+
+/**
+ * @param {string} formId
+ * @param {string} url
+ * @param {RequestInit?} [requestParams={}]
+ * @param {function(resp: Response)?} onSuccess
+ * @param {function?} onError
+ */
+function submitHandler({
+  formId,
+  url,
+  requestParams = {},
+  onSuccess,
+  onError,
+}) {
+  const form = document.getElementById(formId);
+  if (form && url) {
+    const fields = form.querySelectorAll('input');
+    const values = {};
+    fields.forEach((field) => {
+      values[field.name] = field.value;
+    });
+    fetch(url, { ...requestParams, body: JSON.stringify(values) })
+      .then((reps) => {
+        if (onSuccess) {
+          onSuccess(reps);
+        }
+      })
+      .catch((err) => {
+        if (onError) {
+          onError(err);
+        }
+      });
+  }
+}

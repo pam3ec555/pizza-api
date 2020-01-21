@@ -135,7 +135,7 @@ const pageRoute = ({
 }) => (data, callback) => {
   if (data.method === 'get') {
     userIsLoggedIn({
-      token: data.headers.token,
+      token: data.headers.token, // Todo: this does not work
       callback: (err) => {
         getTemplate({
           file,
