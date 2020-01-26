@@ -339,6 +339,31 @@
 }
 ```
 
+## Get profile data
+
+`GET {API_URL}/profile`
+
+##### headers
+
+```
+{
+    'Content-Type': 'application/json',
+    token: string // required
+}
+```
+
+##### succeeded response
+
+```
+200 OK
+
+{
+    name: string,
+    email: string,
+    address: string,
+}
+```
+
 ## Extra info
 
 Do not delete **pizza data** in /.data/menu/pizzaList.json

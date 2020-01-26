@@ -35,9 +35,7 @@ function addToCartHandler(id, name) {
   const listElem = document.querySelector('#menu-list');
   const emptyListMessageElem = document.querySelector('#menu-empty-list-message');
   if (listElem && emptyListMessageElem) {
-    const data = await fetch('/menu', {
-      headers: { token: auth.token },
-    }).then(resp => resp.json());
+    const data = await fetch('/menu').then(resp => resp.json());
     if (Array.isArray(data) && data.length > 0) {
       emptyListMessageElem.remove();
       listElem.innerHTML = data.reduce((result, { image, name, price, size, id }) => {
