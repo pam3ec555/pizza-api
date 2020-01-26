@@ -9,13 +9,14 @@
         method: `POST`,
       },
       onSuccess: (resp) => {
-        if (resp.status !== 204) {
-          errorBlock.classList.remove('hidden');
-          errorBlock.innerHTML = JSON.stringify(payload);
-          throw new Error();
-        } else {
-          alert('User successfully registered');
+        if (resp.status === 204) {
           location.href = '/sign-in';
+        } else {
+          resp.json().then((payload) => {
+            errorBlock.classList.remove('hidden');
+            errorBlock.innerHTML = JSON.stringify(payload);
+            throw new Error();
+          });
         }
       },
     });
