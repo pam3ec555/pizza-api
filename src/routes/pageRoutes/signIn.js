@@ -1,10 +1,10 @@
 const pageRoute = require('./pageRoute');
 
-const menu = pageRoute({
+const signIn = pageRoute({
   file: 'sign-in',
   templateData: {
     'head.title': 'Login',
   },
 });
 
-module.exports = menu;
+module.exports = signIn;
