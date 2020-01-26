@@ -70,7 +70,8 @@ function submitHandler({
     const fields = form.querySelectorAll('input');
     const values = {};
     fields.forEach((field) => {
-      values[field.name] = field.value;
+      const value = field.type === 'number' ? +field.value : field.value;
+      values[field.name] = value;
     });
     fetch(url, { ...requestParams, body: JSON.stringify(values) })
       .then((reps) => {

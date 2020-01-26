@@ -149,7 +149,7 @@ button {
     background-color: #fff;
 }
 
-.auth-form {
+.form {
     margin: 0 auto;
     width: 500px;
     padding: 10px;
@@ -159,7 +159,7 @@ button {
     box-shadow: 0 5px 5px 0 #ddd;
 }
 
-.auth-form__field {
+.form__field {
     width: 100%;
     display: block;
     height: 40px;
@@ -185,7 +185,7 @@ button {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 body.guest .header__nav-item--logged-in {

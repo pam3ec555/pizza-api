@@ -2,6 +2,7 @@ const menu = require('./menu');
 const signIn = require('./signIn');
 const signUp = require('./signUp');
 const cart = require('./cart');
+const payment = require('./payment');
 const publicFolder = require('./public');
 
 const pageRoutes = {
@@ -9,7 +10,7 @@ const pageRoutes = {
   'sign-in': signIn,
   index: menu,
   'my-cart': cart,
-  'payment': 'any',
+  'payment': payment,
   'public': publicFolder,
 };
 
