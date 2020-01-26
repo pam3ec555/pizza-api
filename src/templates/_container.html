@@ -16,7 +16,21 @@
             <img src="/public/img/logo.png" alt="">
         </a>
         <ul class="header__nav-list">
-            {{navData}}
+            <li class="header__nav-item">
+                <a href="/menu" class="header__nav-link">Menu</a>
+            </li>
+            <li class="header__nav-item header__nav-item--logged-in">
+                <a href="/cart" class="header__nav-link">Cart</a>
+            </li>
+            <li class="header__nav-item header__nav-item--logged-in">
+                <button id="logout-btn" class="header__nav-link">Logout</button>
+            </li>
+            <li class="header__nav-item header__nav-item--guest">
+                <a href="/sign-in" class="header__nav-link">Login</a>
+            </li>
+            <li class="header__nav-item header__nav-item--guest">
+                <a href="/sign-up" class="header__nav-link">Sign up</a>
+            </li>
         </ul>
     </header>
     <main class="content">

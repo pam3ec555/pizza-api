@@ -1,5 +1,4 @@
-const store = require('../../store');
-const { MENU_DIR, PIZZA_LIST_FILE } = require('../../utils/constants');
+const { userDataByToken } = require('../../auth');
 
 /**
  * @type {Set<string>}
@@ -12,39 +11,36 @@ const routes = {};
  * @param {Object} data
  * @param {function} callback
  */
-routes.menu = (data, callback) => {
+routes.profile = (data, callback) => {
   if (acceptableMethods.has(data.method)) {
-    routes._menu[data.method](data, callback);
+    routes._profile[data.method](data, callback);
   } else {
     callback({ statusCode: 405 });
   }
 };
 
-routes._menu = {};
+routes._profile = {};
 
 /**
  * @param {Object} data
  * @param {function} callback
  */
-routes._menu.get = (data, callback) => {
+routes._profile.get = (data, callback) => {
   if (typeof data === 'object') {
-    store.read({
-      dir: MENU_DIR,
-      file: PIZZA_LIST_FILE,
-      callback: (err, pizzaList) => {
-        if (!err && pizzaList) {
+    userDataByToken(
+      data.headers.token,
+      (err, userData) => {
+        if (!err && userData) {
+          delete userData.hashedPassword;
           callback({
             statusCode: 200,
-            data: pizzaList,
+            data: userData,
           });
         } else {
-          callback({
-            statusCode: 500,
-            data: { error: err },
-          });
+          callback({ statusCode: 401 });
         }
       },
-    });
+    );
   } else {
     callback({
       statusCode: 500,
