@@ -21,4 +21,11 @@ logger.info = (...message) => {
   console.info('\x1b[34m', ...message, '\x1b[0m');
 };
 
+/**
+ * @param {...*} message
+ */
+logger.log = console.log;
+
+logger.table = console.table;
+
 module.exports = logger;
