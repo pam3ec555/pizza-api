@@ -34,4 +34,8 @@ event.on('users', () => {
   responders.users();
 });
 
+event.on('user', (str) => {
+  responders.user(str);
+});
+
 module.exports = event;

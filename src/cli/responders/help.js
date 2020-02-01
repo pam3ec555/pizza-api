@@ -26,6 +26,10 @@ const data = [
     command: 'users',
     description: 'View all the users who have signed up in the last 24 hours',
   },
+  {
+    command: 'user --{email}',
+    description: 'Show specified user info',
+  },
 ];
 
 const help = () => {

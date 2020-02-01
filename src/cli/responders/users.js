@@ -16,11 +16,7 @@ const users = () => {
           }
 
           return new Date(item.registeredAt).getTime() >= new Date().getTime() - 1000 * 60 * 60 * 24;
-        }).map((item) => {
-          delete item.hashedPassword;
-
-          return item;
-        });
+        }).map(({ email, registeredAt }) => ({ email, registeredAt }));
         logger.table(preparedData);
         horizontalLine();
       } else {
