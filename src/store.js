@@ -10,11 +10,13 @@ const store = {};
 store._baseDir = path.join(appDir, '/.data/');
 
 /**
- * @param {string} dir
  * @param {string} file
+ * @param {string?} dir
  * @return {string}
  */
-store._getFilePath = (dir, file) => `${store._baseDir}${dir}/${file}.json`;
+store._getFilePath = (file, dir) => {
+  return dir ? `${store._baseDir}${dir}/${file}.json` : `${store._baseDir}${file}.json`;
+};
 
 /**
  * @param {string} path
@@ -23,7 +25,7 @@ store._getFilePath = (dir, file) => `${store._baseDir}${dir}/${file}.json`;
 store._getDirPath = (path) => `${store._baseDir}${path}`;
 
 /**
- * @param {string} dir
+ * @param {string?} dir
  * @param {string} file
  * @param {Object} data
  * @param {function(err: string|boolean)} callback
@@ -34,7 +36,7 @@ store.create = ({
   data,
   callback,
 }) => {
-  fs.open(store._getFilePath(dir, file), 'wx', (err, fd) => {
+  fs.open(store._getFilePath(file, dir), 'wx', (err, fd) => {
     if (!err && fd) {
       fs.writeFile(fd, JSON.stringify(data), (err) => {
         if (!err) {
@@ -56,7 +58,7 @@ store.create = ({
 };
 
 /**
- * @param {string} dir
+ * @param {string?} dir
  * @param {string} file
  * @param {function(err: string|null|boolean, data?: Object | Array)} callback
  */
@@ -65,7 +67,7 @@ store.read = ({
   file,
   callback,
 }) => {
-  fs.readFile(store._getFilePath(dir, file), 'utf8', (err, data) => {
+  fs.readFile(store._getFilePath(file, dir), 'utf8', (err, data) => {
     if (!err && typeof data === 'string') {
       callback(false, jsonParse(data));
     } else {
@@ -75,7 +77,7 @@ store.read = ({
 };
 
 /**
- * @param {string} dir
+ * @param {string?} dir
  * @param {string} file
  * @param {Object} data
  * @param {function(err: string|boolean)} callback
@@ -86,7 +88,7 @@ store.update = ({
   data,
   callback,
 }) => {
-  fs.open(store._getFilePath(dir, file), 'r+', (err, fd) => {
+  fs.open(store._getFilePath(file, dir), 'r+', (err, fd) => {
     if (!err && fd) {
       fs.ftruncate(fd, (err) => {
         if (!err) {
@@ -114,7 +116,7 @@ store.update = ({
 };
 
 /**
- * @param {string} dir
+ * @param {string?} dir
  * @param {string} file
  * @param {function(err: string|boolean)} callback
  */
@@ -123,7 +125,7 @@ store.delete = ({
   file,
   callback,
 }) => {
-  fs.unlink(store._getFilePath(dir, file), (err) => {
+  fs.unlink(store._getFilePath(file, dir), (err) => {
     callback(err);
   });
 };
@@ -153,6 +155,42 @@ store.readDir = ({
 }) => {
   fs.readdir(store._getDirPath(path), (err, list) => {
     callback(err, list);
+  });
+};
+
+/**
+ * @param {string} path
+ * @param {*} data
+ * @param {function(err: null|Error|string)} callback
+ */
+store.addToFile = ({
+  path,
+  data,
+  callback,
+}) => {
+  store.read({
+    file: path,
+    callback: (err, currentData) => {
+      if (!err) {
+        if (Array.isArray(currentData)) {
+          store.update({
+            file: path,
+            data: [...currentData, data],
+            callback: (err) => {
+              if (!err) {
+                callback(null);
+              } else {
+                callback(err);
+              }
+            },
+          })
+        } else {
+          callback(`Invalid format of data of file ${path}`);
+        }
+      } else {
+        callback(`Can not open the file ${path}. ${err}`);
+      }
+    },
   });
 };
 

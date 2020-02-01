@@ -22,4 +22,8 @@ event.on('exit', () => {
   responders.exit();
 });
 
+event.on('orders', () => {
+  responders.orders();
+});
+
 module.exports = event;

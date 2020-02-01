@@ -1,6 +1,6 @@
 const fieldValidation = require('../../utils/fieldValidation');
-const { objectSize } = require('../../utils');
-const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE } = require('../../utils/constants');
+const { objectSize, generateRandomString } = require('../../utils');
+const { CARTS_DIR, MENU_DIR, PIZZA_LIST_FILE, ORDERS_FILE } = require('../../utils/constants');
 const { userDataByToken } = require('../../auth');
 const store = require('../../store');
 const stripe = require('../../api/stripe');
@@ -100,19 +100,40 @@ routes._orders.post = (data, callback) => {
                                 if (err) {
                                   logger.error(err);
                                 }
-                                store.update({
-                                  dir: CARTS_DIR,
-                                  file: userData.email,
-                                  data: [],
+
+                                store.addToFile({
+                                  path: ORDERS_FILE,
+                                  data: {
+                                    user: userData.email,
+                                    date: new Date(),
+                                    amount,
+                                    description: `Order data: ${description}`,
+                                    id: generateRandomString(20),
+                                  },
                                   callback: (err) => {
-                                    if (err) {
-                                      logger.error(err);
+                                    if (!err) {
+                                      store.update({
+                                        dir: CARTS_DIR,
+                                        file: userData.email,
+                                        data: [],
+                                        callback: (err) => {
+                                          if (err) {
+                                            logger.error(err);
+                                          }
+
+                                          callback({
+                                            statusCode: 200,
+                                            data: { message },
+                                          });
+                                        }
+                                      });
+                                    } else {
+                                      callback({
+                                        statusCode: 500,
+                                        data: { error: err },
+                                      });
                                     }
-                                    callback({
-                                      statusCode: 200,
-                                      data: { message },
-                                    });
-                                  }
+                                  },
                                 });
                               },
                             });

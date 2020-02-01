@@ -25,4 +25,9 @@ constants.CARTS_DIR = 'carts';
  */
 constants.PIZZA_LIST_FILE = 'pizzaList';
 
+/**
+ * @type {string}
+ */
+constants.ORDERS_FILE = 'orders';
+
 module.exports = constants;
