@@ -26,4 +26,8 @@ event.on('orders', () => {
   responders.orders();
 });
 
+event.on('order', (str) => {
+  responders.order(str);
+});
+
 module.exports = event;

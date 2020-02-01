@@ -14,6 +14,15 @@ const data = [
     command: 'menu list',
     description: 'Show table of menu items',
   },
+  {
+    command: 'orders',
+    description: 'Show table of orders placed in the last 24 hours',
+  },
+
+  {
+    command: 'order --{id}',
+    description: 'Show specified order info',
+  },
 ];
 
 const help = () => {
