@@ -3,6 +3,7 @@ const help = require('./help');
 const exit = require('./exit');
 const orders = require('./orders');
 const order = require('./order');
+const users = require('./users');
 
 const responders = {
   menuItems,
@@ -10,6 +11,7 @@ const responders = {
   exit,
   orders,
   order,
+  users,
 };
 
 module.exports = responders;

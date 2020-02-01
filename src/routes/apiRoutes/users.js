@@ -55,7 +55,13 @@ routes._users.post = (data, callback) => {
               store.create({
                 dir: USERS_DIR,
                 file: email,
-                data: { name, email, hashedPassword, address },
+                data: {
+                  name,
+                  email,
+                  hashedPassword,
+                  address,
+                  registeredAt: new Date(),
+                },
                 callback: (err) => {
                   if (!err) {
                     callback({ statusCode: 204 });

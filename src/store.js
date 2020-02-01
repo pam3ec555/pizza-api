@@ -160,6 +160,38 @@ store.readDir = ({
 
 /**
  * @param {string} path
+ * @param {function(err: null|Error|string, data: *[]?)} callback
+ */
+store.readDataFromDir = ({
+  path,
+  callback,
+}) => {
+  store.readDir({
+    path,
+    callback: (err, list) => {
+      if (!err) {
+        if (Array.isArray(list)) {
+          const data = list.map((file) => {
+            const content = fs.readFileSync(
+              `${store._getDirPath(path)}/${file}`,
+              { encoding: 'utf8' },
+            );
+
+            return jsonParse(content);
+          });
+          callback(null, data);
+        } else {
+          callback('List is not array');
+        }
+      } else {
+        callback(err);
+      }
+    },
+  })
+};
+
+/**
+ * @param {string} path
  * @param {*} data
  * @param {function(err: null|Error|string)} callback
  */

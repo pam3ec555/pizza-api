@@ -30,4 +30,8 @@ event.on('order', (str) => {
   responders.order(str);
 });
 
+event.on('users', () => {
+  responders.users();
+});
+
 module.exports = event;

@@ -18,10 +18,13 @@ const data = [
     command: 'orders',
     description: 'Show table of orders placed in the last 24 hours',
   },
-
   {
     command: 'order --{id}',
     description: 'Show specified order info',
+  },
+  {
+    command: 'users',
+    description: 'View all the users who have signed up in the last 24 hours',
   },
 ];
 
