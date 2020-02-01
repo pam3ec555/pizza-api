@@ -19,7 +19,7 @@ utils.centered = (str) => {
     line += ' ';
   }
   line += str;
-  logger.log(str);
+  logger.log(line);
 };
 
 module.exports = utils;

@@ -14,4 +14,12 @@ event.on('menu list', () => {
   responders.menuItems();
 });
 
+event.on('help', () => {
+  responders.help();
+});
+
+event.on('exit', () => {
+  responders.exit();
+});
+
 module.exports = event;
